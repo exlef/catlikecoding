@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Clock : MonoBehaviour
@@ -6,6 +7,8 @@ public class Clock : MonoBehaviour
     [SerializeField] GameObject hourIndicator, hourIndicatorParent;
     [SerializeField] float radius = 4;
 	[SerializeField] Transform hoursPivot, minutesPivot, secondsPivot;
+
+    const float hoursToDegrees = -30f /* 360 / 12 */, minutesToDegrees = -6f /* 360 / 60 */, secondsToDegrees = -6f /* 360 / 60 */;
     
     void Start()
     {
@@ -18,21 +21,17 @@ public class Clock : MonoBehaviour
             // go.transform.up is the local up direction 
             go.transform.localPosition = go.transform.up * radius;
         }
+    }
 
+    void Update()
+    {
         var time = DateTime.Now;
-        Debug.Log(time);
         float hour = time.Hour;
         float minute = time.Minute;
         float second = time.Second;
 
-        hour = hour % 12;
-
-        float hoursArmAngle = hour * 360 / 12;
-        float minutesArmAngle = minute * 360 / 60;
-        float secondsArmAngle = second * 360 / 60;
-
-        hoursPivot.localRotation = Quaternion.Euler(0, 0, -hoursArmAngle);
-        minutesPivot.localRotation = Quaternion.Euler(0, 0, -minutesArmAngle);
-        secondsPivot.localRotation = Quaternion.Euler(0, 0, -secondsArmAngle);
+        hoursPivot.localRotation = Quaternion.Euler(0, 0, hour * hoursToDegrees);
+        minutesPivot.localRotation = Quaternion.Euler(0, 0, minute * minutesToDegrees);
+        secondsPivot.localRotation = Quaternion.Euler(0, 0, second * secondsToDegrees);
     }
 }
