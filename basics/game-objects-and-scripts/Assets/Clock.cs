@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Clock : MonoBehaviour
@@ -17,5 +18,21 @@ public class Clock : MonoBehaviour
             // go.transform.up is the local up direction 
             go.transform.localPosition = go.transform.up * radius;
         }
+
+        var time = DateTime.Now;
+        Debug.Log(time);
+        float hour = time.Hour;
+        float minute = time.Minute;
+        float second = time.Second;
+
+        hour = hour % 12;
+
+        float hoursArmAngle = hour * 360 / 12;
+        float minutesArmAngle = minute * 360 / 60;
+        float secondsArmAngle = second * 360 / 60;
+
+        hoursPivot.localRotation = Quaternion.Euler(0, 0, -hoursArmAngle);
+        minutesPivot.localRotation = Quaternion.Euler(0, 0, -minutesArmAngle);
+        secondsPivot.localRotation = Quaternion.Euler(0, 0, -secondsArmAngle);
     }
 }
