@@ -17,19 +17,6 @@ public class Graph : MonoBehaviour
         var scale = Vector3.one / factor;
         var position = Vector3.zero;
 
-        for (int i = 0; i < resolution; i++)
-        {
-            /*
-            var go = Instantiate(pointPrefab, transform);
-            
-            go.localScale = scale;
-            position.x = i / factor - 1 + go.localScale.x / 2;
-            go.localPosition = position;
-
-            points[i] = go;
-            */
-        }
-
         int index = 0;
 
         for (int z = 0; z < resolution; z++)
@@ -50,19 +37,18 @@ public class Graph : MonoBehaviour
         }
     }
 
-    void Update () 
+    void Update()
     {
         var time = Time.time;
-        FunctionLibrary.Function f = FunctionLibrary.GetFunction(function); 
-		
+        FunctionLibrary.Function f = FunctionLibrary.GetFunction(function);
+        float step = 2f / resolution;
+        
         for (int i = 0; i < points.Length; i++)
         {
             var point = points[i];
-            var position = point.transform.localPosition;
-
-            position.y = f(position.x, position.z, time);
-
-            point.localPosition = position;
+            var x = ((i % resolution) + 0.5f) * step - 1f;
+            var z = ((i / resolution) + 0.5f) * step - 1f;
+            point.localPosition = f(x, z, time);
         }
     }
 }
