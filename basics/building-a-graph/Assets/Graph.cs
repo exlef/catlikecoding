@@ -33,11 +33,12 @@ public class Graph : MonoBehaviour
         for (int i = 0; i < points.Length; i++)
         {
             var point = points[i];
-            // place cubes in a grid at XZ plane 
+            // place cubes in a way that will form a grid which dimensions are 2x2 at XZ plane.
             var x = ((i % resolution) + 0.5f) * step - 1f;
             var z = ((i / resolution) + 0.5f) * step - 1f;
             // calculate y position based on cube's x,z and the time passed since the game starts.
             point.localPosition = f(x, z, time);
+            // point.localPosition = new Vector3(x, 0, z);
         }
     }
 }
