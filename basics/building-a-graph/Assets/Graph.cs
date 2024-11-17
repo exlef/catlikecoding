@@ -4,7 +4,7 @@ public class Graph : MonoBehaviour
 {
     [SerializeField] Transform pointPrefab;
     [SerializeField, Min(10)] int resolution = 10;
-    [SerializeField] GraphFunctions graphFunctions;
+    [SerializeField] FunctionLibrary.FunctionName function;
 
     Transform[] points;
 
@@ -33,30 +33,16 @@ public class Graph : MonoBehaviour
     void Update () 
     {
         var time = Time.time;
-		for (int i = 0; i < points.Length; i++)
+        FunctionLibrary.Function f = FunctionLibrary.GetFunction(function); 
+		
+        for (int i = 0; i < points.Length; i++)
         {
             var point = points[i];
             var position = point.transform.localPosition;
 
-            switch (graphFunctions)
-            {
-                case GraphFunctions.Wave:
-                    position.y = FunctionLibrary.Wave(position.x, time);
-                    break;
-                case GraphFunctions.MultiWave:
-                    position.y = FunctionLibrary.MultiWave(position.x, time);
-                    break;
-                default:
-                    position.y = 0;
-                    break;
-            }
+            position.y = f(position.x, time);
+
             point.localPosition = position;
         }
     }
-}
-
-enum GraphFunctions
-{
-    Wave,
-    MultiWave,
 }
