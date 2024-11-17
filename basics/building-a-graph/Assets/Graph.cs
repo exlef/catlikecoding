@@ -10,16 +10,16 @@ public class Graph : MonoBehaviour
 
     void Start()
     {
-        points = new Transform[resolution];
+        points = new Transform[resolution * resolution];
 
         var range = 2;
         var factor = (float)resolution / range;
         var scale = Vector3.one / factor;
-        // scale.y = 1;
         var position = Vector3.zero;
 
         for (int i = 0; i < resolution; i++)
         {
+            /*
             var go = Instantiate(pointPrefab, transform);
             
             go.localScale = scale;
@@ -27,6 +27,26 @@ public class Graph : MonoBehaviour
             go.localPosition = position;
 
             points[i] = go;
+            */
+        }
+
+        int index = 0;
+
+        for (int z = 0; z < resolution; z++)
+        {
+            for (int x = 0; x < resolution; x++)
+            {
+                var go = Instantiate(pointPrefab, transform);
+
+                go.localScale = scale;
+                position.x = x / factor - 1 + go.localScale.x / 2;
+                position.z = z / factor - 1 + go.localScale.z / 2;
+                go.localPosition = position;
+
+                points[index] = go;
+
+                index++;
+            }
         }
     }
 
@@ -40,7 +60,7 @@ public class Graph : MonoBehaviour
             var point = points[i];
             var position = point.transform.localPosition;
 
-            position.y = f(position.x, time);
+            position.y = f(position.x, position.z, time);
 
             point.localPosition = position;
         }
