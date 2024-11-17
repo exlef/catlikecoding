@@ -12,28 +12,15 @@ public class Graph : MonoBehaviour
     {
         points = new Transform[resolution * resolution];
 
-        var range = 2;
-        var factor = (float)resolution / range;
+        var range = 2f; // the max distance of the area that the cubes will be in
+        var factor = resolution / range;
         var scale = Vector3.one / factor;
-        var position = Vector3.zero;
 
-        int index = 0;
-
-        for (int z = 0; z < resolution; z++)
+        for (int i = 0; i < points.Length; i++)
         {
-            for (int x = 0; x < resolution; x++)
-            {
-                var go = Instantiate(pointPrefab, transform);
-
-                go.localScale = scale;
-                position.x = x / factor - 1 + go.localScale.x / 2;
-                position.z = z / factor - 1 + go.localScale.z / 2;
-                go.localPosition = position;
-
-                points[index] = go;
-
-                index++;
-            }
+            var go = Instantiate(pointPrefab, transform);
+            go.localScale = scale;
+            points[i] = go;
         }
     }
 
@@ -46,8 +33,10 @@ public class Graph : MonoBehaviour
         for (int i = 0; i < points.Length; i++)
         {
             var point = points[i];
+            // place cubes in a grid at XZ plane 
             var x = ((i % resolution) + 0.5f) * step - 1f;
             var z = ((i / resolution) + 0.5f) * step - 1f;
+            // calculate y position based on cube's x,z and the time passed since the game starts.
             point.localPosition = f(x, z, time);
         }
     }
