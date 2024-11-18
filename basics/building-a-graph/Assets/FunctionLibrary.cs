@@ -12,6 +12,18 @@ public static class FunctionLibrary
         return functions[(int)functionName];
     }
 
+    public static FunctionName GetRandomFunctionNameOtherThan (FunctionName name)
+    {
+		var choice = (FunctionName)Random.Range(1, functions.Length);
+		return choice == name ? 0 : choice;
+	}
+
+    public static Vector3 Morph (float u, float v, float t, Function from, Function to, float progress) 
+    {
+        //The Lerp method clamps its third argument so it falls in the 0–1 range. The Smoothstep method does this as well. We configured the latter to output a 0–1 value, so the extra clamp of Lerp is not needed. For cases like this there is an alternative LerpUnclamped method, so let's use that one instead.
+        return Vector3.LerpUnclamped(from(u, v, t), to(u, v, t), SmoothStep(0f, 1f, progress));
+    }
+
     public static Vector3 Wave (float u, float v, float t)
     {
 		Vector3 p;
