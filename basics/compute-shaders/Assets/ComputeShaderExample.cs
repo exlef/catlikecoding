@@ -7,6 +7,11 @@ public class ComputeShaderExample : MonoBehaviour
     const int bufferSize = 1024;
     const int threadGroupSize = 64;
 
+    static readonly int 
+        bufferSizeId = Shader.PropertyToID("_BufferSize"),
+        dataBufferId = Shader.PropertyToID("_DataBuffer");
+    static readonly string kernelName = "CSMain";
+
     void Start()
     {
         dataBuffer = new ComputeBuffer(bufferSize, sizeof(float));
@@ -18,8 +23,9 @@ public class ComputeShaderExample : MonoBehaviour
         }
         dataBuffer.SetData(data);
 
-        int kernelIndex = computeShader.FindKernel("CSMain");
-        computeShader.SetBuffer(kernelIndex, "_DataBuffer", dataBuffer);
+        int kernelIndex = computeShader.FindKernel(kernelName);
+        computeShader.SetInt(bufferSizeId, bufferSize);
+        computeShader.SetBuffer(kernelIndex, dataBufferId, dataBuffer);
 
         int threadGroupsX = Mathf.CeilToInt((float)bufferSize / threadGroupSize);
         int threadGroupsY = 1;
@@ -29,9 +35,17 @@ public class ComputeShaderExample : MonoBehaviour
 
         float[] resultData = new float[bufferSize];
         dataBuffer.GetData(resultData);
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < bufferSize; i++)
         {
             Debug.Log($"Result {i}: {resultData[i]}");
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (dataBuffer != null)
+        {
+            dataBuffer.Release();
         }
     }
 }
