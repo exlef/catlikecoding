@@ -18,21 +18,11 @@ public class ImageFilter : MonoBehaviour
 
     void Start()
     {
-        bufferSize = texture.width * texture.height * 3;
-        dataBuffer = new ComputeBuffer(bufferSize, sizeof(float) * 3);
+        bufferSize = texture.width * texture.height;
+        dataBuffer = new ComputeBuffer(bufferSize, sizeof(float) * 4);
 
-        float[] data = new float[bufferSize];        
-        for (int y = 0; y < texture.height; y++)
-        {
-            for (int x = 0; x < texture.width; x++)
-            {
-                int index = (y * texture.width + x) * 3;
-                Color color = texture.GetPixel(x, y);
-                data[index]     = color.r;
-                data[index + 1] = color.g;
-                data[index + 2] = color.b;
-            }
-        }
+        Color[] data = new Color[bufferSize];
+        data = texture.GetPixels();
         
         dataBuffer.SetData(data);
 
@@ -48,37 +38,14 @@ public class ImageFilter : MonoBehaviour
 
         computeShader.Dispatch(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
 
-        float[] resultData = new float[bufferSize];
+        Color[] resultData = new Color[bufferSize];
         dataBuffer.GetData(resultData);
-        
-        for (int i = 0; i < bufferSize / 100; i++)
+        foreach (var item in resultData[0..1025])
         {
-            Debug.Log($"Result {i}: {resultData[i]}");
+            Debug.Log($"{item.r}, {item.g}, {item.b}, {item.a}");
         }
-    }
-
-    void ApplyBlackAndWhiteFilter()
-    {
-        Debug.Log("start");
-        if (!texture.isReadable)
-        {
-            Debug.LogError("Texture is not readable. Please check the import settings.");
-        }
-
-        for (int y = 0; y < texture.height; y++)
-        {
-            for (int x = 0; x < texture.width; x++)
-            {
-                Color pixelColor = texture.GetPixel(x, y);
-                float average = (pixelColor.r + pixelColor.g + pixelColor.b) / 3;
-                Color newColor = new Color(average, average, average, 1);
-
-                texture.SetPixel(x, y, newColor);
-            }
-        }
-
+        texture.SetPixels(resultData);
         texture.Apply();
-        Debug.Log("end");
     }
 
     void OnDestroy()
