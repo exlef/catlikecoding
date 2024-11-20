@@ -5,13 +5,15 @@ uint _BufferSize;
 uint _Width;
 uint _Height;
 
-[numthreads(64,1,1)]
+[numthreads (32,32,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    if(id.x < _BufferSize)
+    if(id.x < _Width && id.y < _Height)
     {
-        float4 color = _DataBuffer[id.x];
+        int index = id.y * _Width + id.x;
+        float4 color = _DataBuffer[index];
         float grayscale = (color.r + color.g + color.b) / 3;
-        _DataBuffer[id.x] = float4(grayscale, grayscale, grayscale, 1);
+        _DataBuffer[index] = float4(grayscale, grayscale, grayscale, 1);
+        // _DataBuffer[index] = float4(id.x, id.y, index, 1);
     }
 }
