@@ -2,12 +2,14 @@
 
 RWStructuredBuffer<float> _DataBuffer;
 uint _BufferSize;
+uint _Width;
+uint _Height;
 
 [numthreads(64,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    if(id.x < _BufferSize)
+    if(id.x < _Width && id.y < _Height)
     {
-        _DataBuffer[id.x] = id.x;
+        _DataBuffer[id.x] = 1 - _DataBuffer[id.x];
     }
 }

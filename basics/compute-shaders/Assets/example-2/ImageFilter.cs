@@ -6,29 +6,40 @@ public class ImageFilter : MonoBehaviour
     [Space]
     [SerializeField] ComputeShader computeShader;
     ComputeBuffer dataBuffer;
-    const int bufferSize = 1024;
+    int bufferSize;
     const int threadGroupSize = 64;
 
     static readonly int 
         bufferSizeId = Shader.PropertyToID("_BufferSize"),
-        dataBufferId = Shader.PropertyToID("_DataBuffer");
+        dataBufferId = Shader.PropertyToID("_DataBuffer"),
+        widthId = Shader.PropertyToID("_Width"),
+        heightId = Shader.PropertyToID("_Height");
     static readonly string kernelName = "CSMain";
 
     void Start()
     {
-        ApplyBlackAndWhiteFilter();
+        bufferSize = texture.width * texture.height * 3;
+        dataBuffer = new ComputeBuffer(bufferSize, sizeof(float) * 3);
 
-        dataBuffer = new ComputeBuffer(bufferSize, sizeof(float));
-
-        float[] data = new float[bufferSize];
-        for (int i = 0; i < bufferSize; i++)
+        float[] data = new float[bufferSize];        
+        for (int y = 0; y < texture.height; y++)
         {
-            data[i] = 1;
+            for (int x = 0; x < texture.width; x++)
+            {
+                int index = (y * texture.width + x) * 3;
+                Color color = texture.GetPixel(x, y);
+                data[index]     = color.r;
+                data[index + 1] = color.g;
+                data[index + 2] = color.b;
+            }
         }
+        
         dataBuffer.SetData(data);
 
         int kernelIndex = computeShader.FindKernel(kernelName);
         computeShader.SetInt(bufferSizeId, bufferSize);
+        computeShader.SetInt(heightId, texture.height);
+        computeShader.SetInt(widthId, texture.width);
         computeShader.SetBuffer(kernelIndex, dataBufferId, dataBuffer);
 
         int threadGroupsX = Mathf.CeilToInt((float)bufferSize / threadGroupSize);
@@ -39,9 +50,10 @@ public class ImageFilter : MonoBehaviour
 
         float[] resultData = new float[bufferSize];
         dataBuffer.GetData(resultData);
-        for (int i = 0; i < bufferSize; i++)
+        
+        for (int i = 0; i < bufferSize / 100; i++)
         {
-            // Debug.Log($"Result {i}: {resultData[i]}");
+            Debug.Log($"Result {i}: {resultData[i]}");
         }
     }
 
