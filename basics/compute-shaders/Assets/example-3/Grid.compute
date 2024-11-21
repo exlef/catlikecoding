@@ -16,6 +16,11 @@ int MapTo1D(int x, int y)
     return y * _Width + x;
 }
 
+bool InRangeOf1DArray(int x)
+{
+    return x >= 0 && x < _Width * _Height;
+}
+
 [numthreads(8,8,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -23,7 +28,17 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     {
         if(MapTo1D(id.x, id.y) == _IndexOfClickedCube)
         {
-            _DataBuffer[MapTo1D(id.x, id.y)] = float3(-1, 1, -1);
+            // _DataBuffer[MapTo1D(id.x, id.y)] = float3(-1, 1, -1);
+
+            int right = MapTo1D(id.x + 1, id.y);
+            int left = MapTo1D(id.x - 1, id.y);
+            int up = MapTo1D(id.x, id.y + 1);
+            int down = MapTo1D(id.x, id.y - 1);
+
+            if(InRangeOf1DArray(right)) _DataBuffer[right] = _DataBuffer[right].xyz + float3(0, 1, 0);
+            if(InRangeOf1DArray(left))  _DataBuffer[left]  = _DataBuffer[left].xyz  + float3(0, 1, 0);
+            if(InRangeOf1DArray(up))    _DataBuffer[up]    = _DataBuffer[up].xyz    + float3(0, 1, 0);
+            if(InRangeOf1DArray(down))  _DataBuffer[down]  = _DataBuffer[down].xyz  + float3(0, 1, 0);
         }
     }
 }

@@ -91,6 +91,8 @@ public class GridExample : MonoBehaviour
             }
         }
 
+        cubes[clickedIndex].GetComponent<Renderer>().material.color = Color.red;
+
 
         computeShader.SetInt("_IndexOfClickedCube", clickedIndex);
 
