@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GridExample : MonoBehaviour
@@ -7,7 +8,7 @@ public class GridExample : MonoBehaviour
     [SerializeField] int height = 8;
     GameObject[] cubes;
 
-    void Start()
+    IEnumerator Start()
     {
         cubes = new GameObject[width * height];
 
@@ -16,7 +17,8 @@ public class GridExample : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 var go = Instantiate(cubePrefab, new Vector3(x, 0, y), Quaternion.identity, transform);
-                cubes[x * height + y] = go;
+                cubes[y * width + x] = go;
+                yield return null;
             }
         }
         
@@ -24,16 +26,19 @@ public class GridExample : MonoBehaviour
 
     public void Clicked(GameObject cube)
     {
-        Debug.Log("clicked");
         int clickedIndex = -1;
         for (int i = 0; i < height * width; i++)
         {
             if(cube == cubes[i])
             {
-                Debug.Log("find index " + clickedIndex);
                 clickedIndex = i;
             }
         }
+
+        float x = clickedIndex % width;
+        float y = (clickedIndex - x) / width;
+        Debug.Log($"{clickedIndex} {x}, {y}");
+
 
         cubes[clickedIndex].GetComponent<Renderer>().material.color = Color.red;
 
