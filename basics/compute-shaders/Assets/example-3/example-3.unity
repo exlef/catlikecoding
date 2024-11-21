@@ -240,9 +240,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ac42c5dadc3a49d0b1a4ecde6332d38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cpuBased: 0
   cubePrefab: {fileID: 2484175861259272285, guid: 28ae012e6e61849649d89ff5d12b0f95, type: 3}
   width: 8
   height: 8
+  computeShader: {fileID: 7200000, guid: 7c48c35e14a584298b35f66d24e392fb, type: 3}
 --- !u!4 &1314135747
 Transform:
   m_ObjectHideFlags: 0

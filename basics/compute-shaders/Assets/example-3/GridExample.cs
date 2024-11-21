@@ -3,14 +3,19 @@ using UnityEngine;
 
 public class GridExample : MonoBehaviour
 {
+    [SerializeField] bool cpuBased = true;
     [SerializeField] GameObject cubePrefab;
     [SerializeField] int width = 8;
     [SerializeField] int height = 8;
+    [SerializeField] ComputeShader computeShader;
+    ComputeBuffer dataBuffer;
     GameObject[] cubes;
+    const int threadGroupSize = 8;
 
     IEnumerator Start()
     {
         cubes = new GameObject[width * height];
+        dataBuffer = new ComputeBuffer(width * height, sizeof(float) * 3);
 
         for (int y = 0; y < height; y++)
         {
@@ -21,11 +26,48 @@ public class GridExample : MonoBehaviour
                 yield return null;
             }
         }
+
+        float[] data = new float[width * height * 3];
+        for (int i = 0, cubesIndex = 0; cubesIndex < width * height; i += 3, cubesIndex++)
+        {
+            data[i]   = cubes[cubesIndex].transform.position.x;
+            data[i+1] = cubes[cubesIndex].transform.position.y;
+            data[i+2] = cubes[cubesIndex].transform.position.z;
+        }
+        dataBuffer.SetData(data);
+
+        int kernelIndex = computeShader.FindKernel("CSMain");
+        computeShader.SetInt("_Height", height);
+        computeShader.SetInt("_Width", width);
+        computeShader.SetBuffer(kernelIndex, "_DataBuffer", dataBuffer);
         
+        int threadGroupsX = Mathf.CeilToInt((float)width * height / threadGroupSize);
+        int threadGroupsY = Mathf.CeilToInt((float)width * height / threadGroupSize);
+        int threadGroupsZ = 1;
+        computeShader.Dispatch(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
+
+        float[] resultData = new float[width * height * 3];
+        dataBuffer.GetData(resultData);
+        for (int i = 0, cubesIndex = 0; cubesIndex < width * height; i += 3, cubesIndex++)
+        {
+            cubes[cubesIndex].transform.position = new Vector3(resultData[i], resultData[i + 1], resultData[i + 2]);
+        }
+
+        foreach (var item in resultData)
+        {
+            Debug.Log(item);
+        }  
     }
 
     public void Clicked(GameObject cube)
     {
+        if(cpuBased) ClickedCPU(cube);
+        else ClickedGPU(cube);
+        
+    }
+
+    void ClickedCPU(GameObject cube)
+     {
         int clickedIndex = -1;
         for (int i = 0; i < height * width; i++)
         {
@@ -37,7 +79,6 @@ public class GridExample : MonoBehaviour
 
         int x = clickedIndex % width;
         int y = (clickedIndex - x) / width;
-        Debug.Log($"{clickedIndex} {x}, {y}");
 
 
         cubes[clickedIndex].GetComponent<Renderer>().material.color = Color.red;
@@ -52,8 +93,11 @@ public class GridExample : MonoBehaviour
         if(InRange(left))  cubes[left].transform.localPosition += new Vector3(0,1,0);
         if(InRange(up))    cubes[up].transform.localPosition += new Vector3(0,1,0);
         if(InRange(down))  cubes[down].transform.localPosition += new Vector3(0,1,0);
+     }
 
-        // do the dispatch and stuff...
+    void ClickedGPU(GameObject cube)
+    {
+        Debug.Log("gpu");
     }
 
     int MapTo1D(int x, int y)
@@ -64,7 +108,6 @@ public class GridExample : MonoBehaviour
 
     bool InRange(int x)
     {
-        Debug.Log(x);
         return x >= 0 && x < width * height;
     }
 
