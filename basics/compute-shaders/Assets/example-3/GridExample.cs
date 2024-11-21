@@ -11,6 +11,7 @@ public class GridExample : MonoBehaviour
     ComputeBuffer dataBuffer;
     GameObject[] cubes;
     const int threadGroupSize = 8;
+    static int kernelIndex = -1;
 
     IEnumerator Start()
     {
@@ -36,27 +37,11 @@ public class GridExample : MonoBehaviour
         }
         dataBuffer.SetData(data);
 
-        int kernelIndex = computeShader.FindKernel("CSMain");
+        kernelIndex = computeShader.FindKernel("CSMain");
         computeShader.SetInt("_Height", height);
         computeShader.SetInt("_Width", width);
-        computeShader.SetBuffer(kernelIndex, "_DataBuffer", dataBuffer);
-        
-        int threadGroupsX = Mathf.CeilToInt((float)width * height / threadGroupSize);
-        int threadGroupsY = Mathf.CeilToInt((float)width * height / threadGroupSize);
-        int threadGroupsZ = 1;
-        computeShader.Dispatch(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
-
-        float[] resultData = new float[width * height * 3];
-        dataBuffer.GetData(resultData);
-        for (int i = 0, cubesIndex = 0; cubesIndex < width * height; i += 3, cubesIndex++)
-        {
-            cubes[cubesIndex].transform.position = new Vector3(resultData[i], resultData[i + 1], resultData[i + 2]);
-        }
-
-        foreach (var item in resultData)
-        {
-            Debug.Log(item);
-        }  
+         computeShader.SetInt("_IndexOfClickedCube", -1);
+        computeShader.SetBuffer(kernelIndex, "_DataBuffer", dataBuffer); 
     }
 
     public void Clicked(GameObject cube)
@@ -97,7 +82,31 @@ public class GridExample : MonoBehaviour
 
     void ClickedGPU(GameObject cube)
     {
-        Debug.Log("gpu");
+        int clickedIndex = -1;
+        for (int i = 0; i < height * width; i++)
+        {
+            if(cube == cubes[i])
+            {
+                clickedIndex = i;
+            }
+        }
+
+
+        computeShader.SetInt("_IndexOfClickedCube", clickedIndex);
+
+
+        int threadGroupsX = Mathf.CeilToInt((float)width * height / threadGroupSize);
+        int threadGroupsY = Mathf.CeilToInt((float)width * height / threadGroupSize);
+        int threadGroupsZ = 1;
+        computeShader.Dispatch(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
+
+        float[] resultData = new float[width * height * 3];
+        dataBuffer.GetData(resultData);
+        for (int i = 0, cubesIndex = 0; cubesIndex < width * height; i += 3, cubesIndex++)
+        {
+            cubes[cubesIndex].transform.position = new Vector3(resultData[i], resultData[i + 1], resultData[i + 2]);
+        }
+
     }
 
     int MapTo1D(int x, int y)

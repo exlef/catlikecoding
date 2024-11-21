@@ -1,6 +1,7 @@
 #pragma kernel CSMain
 
 RWStructuredBuffer<float3> _DataBuffer;
+uint _IndexOfClickedCube;
 uint _Width;
 uint _Height;
 
@@ -20,6 +21,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 {
     if(id.x >= 0 && id.x < _Width && id.y >= 0 && id.y < _Height)
     {
-        _DataBuffer[MapTo1D(id.x, id.y)] = float3(0, 1, 0);
+        if(MapTo1D(id.x, id.y) == _IndexOfClickedCube)
+        {
+            _DataBuffer[MapTo1D(id.x, id.y)] = float3(-1, 1, -1);
+        }
     }
 }
