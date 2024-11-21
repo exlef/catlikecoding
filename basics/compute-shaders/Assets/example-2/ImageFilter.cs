@@ -7,7 +7,7 @@ public class ImageFilter : MonoBehaviour
     [SerializeField] ComputeShader computeShader;
     ComputeBuffer dataBuffer;
     int bufferSize;
-    const int threadGroupSize = 32;
+    const int threadGroupSize = 64;
 
     static readonly int 
         bufferSizeId = Shader.PropertyToID("_BufferSize"),
@@ -33,7 +33,7 @@ public class ImageFilter : MonoBehaviour
         computeShader.SetBuffer(kernelIndex, dataBufferId, dataBuffer);
 
         int threadGroupsX = Mathf.CeilToInt((float)bufferSize / threadGroupSize);
-        int threadGroupsY = Mathf.CeilToInt((float)bufferSize / threadGroupSize);
+        int threadGroupsY = 1;
         int threadGroupsZ = 1;
 
         computeShader.Dispatch(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
