@@ -149,8 +149,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   computeShader: {fileID: 7200000, guid: e1366cdf290a84e69b9856f0cf0ca9e4, type: 3}
-  pointPrefab: {fileID: 755640988813948968, guid: 3670e68071eb14d76813a5e172b99a30, type: 3}
-  resolution: 10
+  resolution: 200
+  material: {fileID: 2100000, guid: 5c8b51923addb4e6ea9ecc6bf467bba6, type: 2}
+  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   function: 0
   nextFunction: 0
 --- !u!4 &17666431
