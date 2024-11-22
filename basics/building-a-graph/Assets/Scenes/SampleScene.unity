@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   computeShader: {fileID: 7200000, guid: e1366cdf290a84e69b9856f0cf0ca9e4, type: 3}
   resolution: 1000
-  material: {fileID: 2100000, guid: 5c8b51923addb4e6ea9ecc6bf467bba6, type: 2}
+  material: {fileID: 2100000, guid: 364eb055ee82c4d8f9441f507c5d7328, type: 2}
   mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &17666431
 Transform:
@@ -202,7 +202,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00012207031}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 334.2, y: 334.8}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &344596942
