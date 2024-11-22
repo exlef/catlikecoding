@@ -3,14 +3,15 @@ using UnityEngine;
 public class GPUGraph : MonoBehaviour
 {
     [SerializeField] ComputeShader computeShader;
-    [SerializeField, Min(10)] int resolution = 10;
+    const int maxResolution = 1000;
+    [SerializeField, Range(10, maxResolution)] int resolution = 10;
     [SerializeField] Material material;
 	[SerializeField] Mesh mesh;
     ComputeBuffer positionsBuffer;
 
 	void Awake ()
     {
-		positionsBuffer = new ComputeBuffer(resolution * resolution, 3 * sizeof(float));
+		positionsBuffer = new ComputeBuffer(maxResolution * maxResolution, 3 * sizeof(float));// we claim memory for maxResolution this way we can change the graph resolution in play mode.
 	}
 
     void OnDestroy()
@@ -37,6 +38,6 @@ public class GPUGraph : MonoBehaviour
 		material.SetFloat("_Step", step);
 
         var bounds = new Bounds(Vector3.zero, Vector3.one * (2f + 2f / resolution));
-		Graphics.DrawMeshInstancedProcedural(mesh, 0, material, bounds, positionsBuffer.count);
+		Graphics.DrawMeshInstancedProcedural(mesh, 0, material, bounds, resolution * resolution);
 	}
 }
