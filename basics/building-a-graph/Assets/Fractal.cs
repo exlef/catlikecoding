@@ -6,14 +6,23 @@ public class Fractal : MonoBehaviour
 
     void Start()
     {
-        name = "Fracta " + depth;
-        
+        name = "Fractal " + depth;
+
         if(depth <= 1) return;
 
-        var go = Instantiate(this);
-        go.depth = depth - 1;
-        go.transform.SetParent(transform, false);
-        go.transform.localPosition = Vector3.right;
-        // go.name = 
+        var child1 = CreateChild(Vector3.right);
+        var child2 = CreateChild(Vector3.up);
+
+        child1.transform.SetParent(transform, false);
+        child2.transform.SetParent(transform, false);
+    }
+
+    Fractal CreateChild(Vector3 direction)
+    {
+        var child = Instantiate(this);
+        child.depth = depth - 1;
+        child.transform.localPosition = 0.75f * direction;
+        child.transform.localScale = 0.5f * Vector3.one; 
+        return child;
     }
 }
