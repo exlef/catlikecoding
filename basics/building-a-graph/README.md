@@ -1,4 +1,4 @@
-
+#Building a graph
 
 https://github.com/user-attachments/assets/2da07525-19d5-4251-8678-d623c41e16f6
 
@@ -35,4 +35,10 @@ https://github.com/user-attachments/assets/24beb5b1-91e9-4f6a-b698-71a8c2bff069
 
 https://github.com/user-attachments/assets/7cdf5714-6778-44b7-9e28-3f56409596e7
 
+
+#Fractal
+
+
+
+https://github.com/user-attachments/assets/211e9a9a-2d5c-445e-a42d-689d7a2b2af8
 
