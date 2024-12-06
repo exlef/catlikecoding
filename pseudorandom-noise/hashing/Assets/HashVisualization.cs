@@ -23,6 +23,8 @@ public class HashVisualization : MonoBehaviour
 
         new HashJob {
             hashes = hashes,
+            resolution = resolution,
+            invResolution = 1f / resolution
         }.ScheduleParallel(hashes.Length, resolution, default).Complete();
         
         hashesBuf.SetData(hashes);
@@ -34,7 +36,6 @@ public class HashVisualization : MonoBehaviour
         };
         rp.matProps.SetBuffer("_Hashes", hashesBuf);
         rp.matProps.SetVector("_Config", new Vector4(resolution, 1f / resolution));
-        Debug.Log(new Vector4(resolution, 1f / resolution));
     }
 
     void Update()
@@ -68,10 +69,15 @@ public class HashVisualization : MonoBehaviour
     struct HashJob : IJobFor
     {
         [WriteOnly] public NativeArray<uint> hashes;
+        public int resolution;
+        public float invResolution;
 
         public void Execute(int i)
         {
-            hashes[i] = (uint)i;
+            float epsilon = 1e-5f; // to get rid off the floating point percision errors. that cause by floor function
+            float v = floor(invResolution * i + epsilon);
+            float u = i - resolution * v;
+            hashes[i] = (uint)(frac(u * v * 0.381f) * 255f);
         }
     }
 }

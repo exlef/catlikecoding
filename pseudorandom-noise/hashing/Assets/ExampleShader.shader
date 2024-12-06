@@ -49,8 +49,8 @@ Shader "ExampleShader"
                 v2f o;
 
                 o.instanceID = instanceID;
-                
-                float v = floor(_Config.y * instanceID);
+                float epsilon = 1e-5;
+                float v = floor(_Config.y * instanceID + epsilon); // to get rid off the floating point percision errors.
                 float u = instanceID - _Config.x * v;
 
                 float xPos =  _Config.y * (u + 0.5) - 0.5;
@@ -70,7 +70,7 @@ Shader "ExampleShader"
             float4 frag(v2f i) : SV_Target
             {
                 uint hash = _Hashes[i.instanceID];
-                return _Config.y * _Config.y * hash;
+                return (1.0 / 255.0) * (hash & 255);
             }
             ENDCG
         }
