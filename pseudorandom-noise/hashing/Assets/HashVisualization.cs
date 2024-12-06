@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using Ex;
 
 using static Unity.Mathematics.math;
 
@@ -75,9 +76,10 @@ public class HashVisualization : MonoBehaviour
         public void Execute(int i)
         {
             float epsilon = 1e-5f; // to get rid off the floating point percision errors. that cause by floor function
-            float v = floor(invResolution * i + epsilon);
-            float u = i - resolution * v;
-            hashes[i] = (uint)(frac(u * v * 0.381f) * 255f);
+            int v = (int)floor(invResolution * i + epsilon);
+            int u = i - resolution * v;
+
+            hashes[i] = SmallXXHash.Seed(0).Eat(u).Eat(v);
         }
     }
 }
