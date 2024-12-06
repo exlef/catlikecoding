@@ -10,8 +10,10 @@ using static Unity.Mathematics.math;
 public class HashVisualization : MonoBehaviour
 {
     [SerializeField, Range(1, 512)] int resolution = 16;
+    [SerializeField, Range(-2f, 2f)] float verticalOffset = 1f;
     [SerializeField] Mesh mesh;
     [SerializeField] Material mat;
+    [SerializeField] int seed;
     RenderParams rp;
     NativeArray<uint> hashes;
     ComputeBuffer hashesBuf;
@@ -25,7 +27,8 @@ public class HashVisualization : MonoBehaviour
         new HashJob {
             hashes = hashes,
             resolution = resolution,
-            invResolution = 1f / resolution
+            invResolution = 1f / resolution,
+            hash = SmallXXHash.Seed(seed),
         }.ScheduleParallel(hashes.Length, resolution, default).Complete();
         
         hashesBuf.SetData(hashes);
@@ -36,7 +39,7 @@ public class HashVisualization : MonoBehaviour
             matProps = new MaterialPropertyBlock()
         };
         rp.matProps.SetBuffer("_Hashes", hashesBuf);
-        rp.matProps.SetVector("_Config", new Vector4(resolution, 1f / resolution));
+        rp.matProps.SetVector("_Config", new Vector4(resolution, 1f / resolution, verticalOffset / resolution));
     }
 
     void Update()
@@ -72,6 +75,7 @@ public class HashVisualization : MonoBehaviour
         [WriteOnly] public NativeArray<uint> hashes;
         public int resolution;
         public float invResolution;
+        public SmallXXHash hash;
 
         public void Execute(int i)
         {
@@ -79,7 +83,7 @@ public class HashVisualization : MonoBehaviour
             int v = (int)floor(invResolution * i + epsilon);
             int u = i - resolution * v;
 
-            hashes[i] = SmallXXHash.Seed(0).Eat(u).Eat(v);
+            hashes[i] = hash.Eat(u).Eat(v);
         }
     }
 }
