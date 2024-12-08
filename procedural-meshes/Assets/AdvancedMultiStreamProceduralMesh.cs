@@ -7,7 +7,6 @@ using static Unity.Mathematics.math;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class AdvancedMultiStreamProceduralMesh : MonoBehaviour
 {
-
     void OnEnable()
     {
         int vertexAttributeCount = 4;
