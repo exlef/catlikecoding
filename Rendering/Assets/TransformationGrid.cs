@@ -6,7 +6,7 @@ public class TransformationGrid : MonoBehaviour
     [SerializeField] int gridResolution;
     [SerializeField] Transform prefab;
     Transform[] grid;
-    List<Transformation> transformations;
+    List<Transformation> transformations = new();
 
     void Awake()
     {
