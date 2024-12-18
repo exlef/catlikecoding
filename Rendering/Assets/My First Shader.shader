@@ -1,4 +1,4 @@
-Shader "Custom/shad"
+Shader "Custom/My First Shader"
 {
     Properties
     {
