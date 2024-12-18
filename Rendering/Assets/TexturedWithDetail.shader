@@ -45,7 +45,7 @@ Shader "Custom/Textured With Detail"
 			float4 MyFragmentProgram(Interpolators i) : SV_TARGET
             {
                 float4 color = tex2D(_MainTex, i.uv) * _Tint;
-                color *= tex2D(_DetailTex, i.uvDetail) * 2; // *2 is for masking the effect of detail texture when we fade that to gray since the mesh is being seen from far away
+                color *= tex2D(_DetailTex, i.uvDetail) * unity_ColorSpaceDouble;
                 return color;
 			}
 
