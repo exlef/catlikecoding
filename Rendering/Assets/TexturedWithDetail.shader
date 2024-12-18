@@ -1,9 +1,10 @@
-Shader "Custom/shad"
+Shader "Custom/Textured With Detail"
 {
     Properties
     {
         _Tint ("Tint", Color) = (1, 1, 1, 1)
         _MainTex ("Texture", 2D) = "white" {}
+        _DetailTex ("Detail Texture", 2D) = "gray" {}
 	}
 
     SubShader
@@ -18,8 +19,8 @@ Shader "Custom/shad"
             #include "UnityCG.cginc"
 
             float4 _Tint;
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
+            sampler2D _MainTex, _DetailTex;
+            float4 _MainTex_ST, _DetailTex_ST;
 
             struct VertexData {
 				float4 position : POSITION;
@@ -29,6 +30,7 @@ Shader "Custom/shad"
             struct Interpolators {
 				float4 position : SV_POSITION;
 				float2 uv : TEXCOORD0;
+                float2 uvDetail : TEXCOORD1;
 			};
 			
             Interpolators MyVertexProgram(VertexData v)
@@ -36,12 +38,15 @@ Shader "Custom/shad"
                 Interpolators i;
                 i.position = UnityObjectToClipPos(v.position);
                 i.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                i.uvDetail = TRANSFORM_TEX(v.uv, _DetailTex);
                 return i;
 			}
 
 			float4 MyFragmentProgram(Interpolators i) : SV_TARGET
             {
-                return tex2D(_MainTex, i.uv) * _Tint;
+                float4 color = tex2D(_MainTex, i.uv) * _Tint;
+                color *= tex2D(_DetailTex, i.uvDetail) * 2; // *2 is for masking the effect of detail texture when we fade that to gray since the mesh is being seen from far away
+                return color;
 			}
 
             ENDCG
