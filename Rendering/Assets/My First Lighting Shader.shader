@@ -10,12 +10,16 @@ Shader "Custom/My First Lighting Shader"
     {
 		Pass
         {
+            Tags {
+				"LightMode" = "ForwardBase"
+			}
+            
             CGPROGRAM
 
             #pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 
-            #include "UnityCG.cginc"
+            #include "UnityStandardBRDF.cginc"
 
             float4 _Tint;
             sampler2D _MainTex;
@@ -37,15 +41,16 @@ Shader "Custom/My First Lighting Shader"
             {
                 Interpolators i;
                 i.position = UnityObjectToClipPos(v.position);
-                i.normal = mul(unity_ObjectToWorld, float4(v.normal, 0));
-                i.normal = normalize(i.normal);
+                i.normal = UnityObjectToWorldNormal(v.normal);
                 i.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return i;
 			}
 
 			float4 MyFragmentProgram(Interpolators i) : SV_TARGET
             {
-                return float4(i.normal * 0.5 + 0.5, 1);
+                i.normal = normalize(i.normal); // After producing correct normals in the vertex program, they are passed through the interpolator. Unfortunately, linearly interpolating between different unit-length vectors does not result in another unit-length vector. It will be shorter.
+                float3 lightDir = _WorldSpaceLightPos0.xyz;
+                return DotClamped(lightDir, i.normal);
 			}
 
             ENDCG
