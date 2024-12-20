@@ -30,7 +30,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Metallic: 0
-    - _Smoothness: 1
+    - _Smoothness: 0.852
     m_Colors:
     - _SpecularTint: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 1}
     - _Tint: {r: 1, g: 0.3254717, b: 0.3254717, a: 1}
